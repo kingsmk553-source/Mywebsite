@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ห้องสมุดออนไลน์</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f3ec;
+  color: #24352e;
+}
+header {
+  background: #245b4a;
+  color: white;
+  text-align: center;
+  padding: 35px 15px;
+}
+main {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+.book {
+  background: white;
+  margin-top: 15px;
+  padding: 20px;
+  border-radius: 12px;
+}
+button {
+  background: #245b4a;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 16px;
+}
+footer {
+  text-align: center;
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 ห้องสมุดออนไลน์</h1>
+  <p>อ่านสนุก เรียนรู้ภาษา เปิดโลกผ่านเรื่องราว</p>
+</header>
+
+<main>
+  <h2>ค้นหาหมวดหมู่</h2>
+  <input id="search" placeholder="ค้นหานิทานหรือบทเรียน...">
+
+  <section id="books">
+    <div class="book">
+      <h2>🇨🇳 นิทานจีน</h2>
+      <p>ตัวจีน พินอิน และคำแปลภาษาไทย</p>
+      <button onclick="alert('หมวดนิทานจีนกำลังเตรียมเนื้อหา')">เปิดหมวดหมู่</button>
+    </div>
+
+    <div class="book">
+      <h2>🇹🇭 นิทานไทย</h2>
+      <p>นิทานสนุก ๆ พร้อมข้อคิดท้ายเรื่อง</p>
+      <button onclick="alert('หมวดนิทานไทยกำลังเตรียมเนื้อหา')">เปิดหมวดหมู่</button>
+    </div>
+
+    <div class="book">
+      <h2>📖 บทเรียน HSK</h2>
+      <p>ฝึกอ่านและเรียนรู้คำศัพท์ภาษาจีน</p>
+      <button onclick="alert('บทเรียน HSK กำลังเตรียมเนื้อหา')">เปิดหมวดหมู่</button>
+    </div>
+  </section>
+</main>
+
+<footer>©️ ห้องสมุดออนไลน์</footer>
+
+<script>
+document.getElementById('search').addEventListener('input', function() {
+  const word = this.value.toLowerCase();
+  document.querySelectorAll('.book').forEach(function(book) {
+    book.style.display =
+      book.textContent.toLowerCase().includes(word) ? '' : 'none';
+  });
+});
+</script>
+</body>
+</html>

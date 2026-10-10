@@ -3,94 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ห้องสมุดออนไลน์</title>
+<title>ห้องสมุดของฉัน</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f5f3ec;
-  color: #24352e;
-}
-header {
-  background: #245b4a;
-  color: white;
-  text-align: center;
-  padding: 35px 15px;
-}
-main {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-}
-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 16px;
-}
-.book {
-  background: white;
-  margin-top: 15px;
-  padding: 20px;
-  border-radius: 12px;
-}
-button {
-  background: #245b4a;
-  color: white;
-  border: 0;
-  border-radius: 8px;
-  padding: 10px 15px;
-  font-size: 16px;
-}
-footer {
-  text-align: center;
-  padding: 20px;
-}
+*{box-sizing:border-box}
+body{margin:0;background:#f6f7f2;color:#25352c;font-family:Arial,"Noto Sans Thai",sans-serif;line-height:1.8}
+header{background:#245c45;color:white;padding:26px 18px;text-align:center}
+header h1{margin:0;font-size:28px}
+header p{margin:5px 0 0}
+main{max-width:850px;margin:auto;padding:20px 15px}
+input{width:100%;padding:13px;border:1px solid #ccd5cc;border-radius:12px;font-size:16px;margin-bottom:15px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+button{border:0;border-radius:10px;padding:10px 15px;font-size:15px;cursor:pointer}
+nav button{background:#e3e9e1;color:#245c45}
+nav button.active,.primary{background:#245c45;color:white}
+.book{background:white;border:1px solid #e5e9e1;border-radius:15px;padding:17px;margin:12px 0}
+.book h3{margin:0 0 5px}
+.book p{margin:4px 0;color:#68766c}
+.tag{font-size:12px;color:#47795b}
+.read{margin-top:10px}
+#reader{background:white;border-radius:15px;padding:20px}
+#reader h2{line-height:1.5}
+.chinese{font-size:20px;color:#245c45}
+.translation{background:#f0f5ed;border-radius:10px;padding:12px;margin:12px 0}
+.quote{border-left:4px solid #d3a65b;padding:10px 14px;background:#fff8e8;margin-top:20px}
+.hidden{display:none}
+footer{text-align:center;padding:25px;color:#758075;font-size:13px}
 </style>
 </head>
 <body>
 <header>
-  <h1>📚 ห้องสมุดออนไลน์</h1>
-  <p>อ่านสนุก เรียนรู้ภาษา เปิดโลกผ่านเรื่องราว</p>
+  <h1>📚 ห้องสมุดของฉัน</h1>
+  <p>อ่านทุกวัน เรียนรู้ทุกวัน</p>
+  <p>นิทานจีน · นิทานไทย · ฝึกภาษาจีน HSK</p>
 </header>
 
 <main>
-  <h2>ค้นหาหมวดหมู่</h2>
-  <input id="search" placeholder="ค้นหานิทานหรือบทเรียน...">
+  <section id="library">
+    <input id="search" type="search" placeholder="ค้นหาชื่อหนังสือ..." oninput="renderBooks()">
+    <nav id="categories">
+      <button class="active" onclick="setCategory('ทั้งหมด',this)">ทั้งหมด</button>
+      <button onclick="setCategory('นิทานจีน',this)">นิทานจีน</button>
+      <button onclick="setCategory('นิทานไทย',this)">นิทานไทย</button>
+      <button onclick="setCategory('HSK',this)">บทอ่าน HSK</button>
+    </nav>
+    <h2>📖 ชั้นหนังสือ</h2>
+    <div id="books"></div>
+  </section>
 
-  <section id="books">
-    <div class="book">
-      <h2>🇨🇳 นิทานจีน</h2>
-      <p>ตัวจีน พินอิน และคำแปลภาษาไทย</p>
-      <button onclick="alert('หมวดนิทานจีนกำลังเตรียมเนื้อหา')">เปิดหมวดหมู่</button>
-    </div>
-
-    <div class="book">
-      <h2>🇹🇭 นิทานไทย</h2>
-      <p>นิทานสนุก ๆ พร้อมข้อคิดท้ายเรื่อง</p>
-      <button onclick="alert('หมวดนิทานไทยกำลังเตรียมเนื้อหา')">เปิดหมวดหมู่</button>
-    </div>
-
-    <div class="book">
-      <h2>📖 บทเรียน HSK</h2>
-      <p>ฝึกอ่านและเรียนรู้คำศัพท์ภาษาจีน</p>
-      <button onclick="alert('บทเรียน HSK กำลังเตรียมเนื้อหา')">เปิดหมวดหมู่</button>
-    </div>
+  <section id="reader" class="hidden">
+    <button class="primary" onclick="backToLibrary()">← กลับไปหน้ารายการ</button>
+    <div id="content"></div>
   </section>
 </main>
 
-<footer>©️ ห้องสมุดออนไลน์</footer>
+<footer>ห้องสมุดออนไลน์ · อ่านฟรี</footer>
 
 <script>
-document.getElementById('search').addEventListener('input', function() {
-  const word = this.value.toLowerCase();
-  document.querySelectorAll('.book').forEach(function(book) {
-    book.style.display =
-      book.textContent.toLowerCase().includes(word) ? '' : 'none';
-  });
-});
+const books = [
+ {
+  title:"ชายหนุ่มกับต้นไม้", category:"นิทานจีน", level:"นิทานสั้น",
+  content:`
+   <h2>ชายหนุ่มกับต้นไม้</h2>
+   <p class="chinese">从前，有一个年轻人。他每天都去看一棵小树，希望它快点长大。</p>
+   <div class="translation"><b>คำแปลไทย</b><br>กาลครั้งหนึ่ง มีชายหนุ่มคนหนึ่ง เขาไปดูต้นไม้เล็ก ๆ ทุกวัน และหวังว่ามันจะเติบโตเร็ว ๆ</div>
+   <p class="chinese">可是，树长得很慢。他有一点儿着急，但是还是每天给树浇水。</p>
+   <div class="translation"><b>คำแปลไทย</b><br>แต่ต้นไม้เติบโตช้ามาก เขารู้สึกกังวลเล็กน้อย แต่ก็ยังรดน้ำให้ต้นไม้ทุกวัน</div>
+   <p class="chinese">几个月以后，小树终于长高了。年轻人明白了：做事情不能太着急，要有耐心。</p>
+   <div class="translation"><b>คำแปลไทย</b><br>หลายเดือนต่อมา ในที่สุดต้นไม้ก็สูงขึ้น ชายหนุ่มเข้าใจว่า การทำสิ่งต่าง ๆ ต้องไม่ใจร้อน แต่ต้องมีความอดทน</div>
+   <div class="quote"><b>คำคมท้ายบท</b><p>做事情不能太着急，要有耐心。</p><p>ความหมาย: การทำสิ่งต่าง ๆ ต้องไม่ใจร้อน ควรมีความอดทน เพราะสิ่งดี ๆ ต้องใช้เวลา</p></div>`
+ },
+ {
+  title:"กระต่ายกับเต่า", category:"นิทานไทย", level:"นิทานสอนใจ",
+  content:`
+   <h2>กระต่ายกับเต่า</h2>
+   <p>วันหนึ่ง กระต่ายตัวหนึ่งหัวเราะเยาะเต่าว่าเดินช้ามาก เต่าจึงชวนกระต่ายแข่งวิ่ง</p>
+   <p>เมื่อเริ่มการแข่งขัน กระต่ายวิ่งนำไปไกลและคิดว่าตัวเองชนะอย่างแน่นอน จึงนอนพักใต้ต้นไม้</p>
+   <p>ส่วนเต่ายังคงเดินต่อไปอย่างไม่หยุด ในที่สุดเต่าก็ถึงเส้นชัยก่อนกระต่าย</p>
+   <div class="quote"><b>ข้อคิดท้ายบท</b><p>ความพยายามและความสม่ำเสมอ ช่วยให้เราไปถึงเป้าหมายได้</p><p>ตีความ: ไม่ควรประมาทผู้อื่น และควรตั้งใจทำสิ่งที่เริ่มต้นให้สำเร็จ</p></div>`
+ },
+ {
+  title:"每天进步一点儿", category:"HSK", level:"เหมาะสำหรับผู้เรียน HSK 3–4",
+  content:`
+   <h2>每天进步一点儿</h2>
+   <p class="chinese">学习语言需要时间。每天学习十个新词，慢慢地就会积累很多词语。</p>
+   <p><b>พินอิน:</b><br>Xuéxí yǔyán xūyào shíjiān. Měitiān xuéxí shí ge xīn cí, mànmàn de jiù huì jīlěi hěn duō cíyǔ.</p>
+   <div class="translation"><b>คำแปลไทย</b><br>การเรียนภาษาต้องใช้เวลา ทุกวันเรียนคำศัพท์ใหม่สิบคำ แล้วค่อย ๆ สะสมไป ก็จะมีคำศัพท์มากมาย</div>
+   <p class="chinese">不要因为进步很慢就放弃。只要坚持下去，你一定会看到自己的变化。</p>
+   <p><b>พินอิน:</b><br>Bú yào yīnwèi jìnbù hěn màn jiù fàngqì. Zhǐyào jiānchí xiàqu, nǐ yídìng huì kàndào zìjǐ de biànhuà.</p>
+   <div class="translation"><b>คำแปลไทย</b><br>อย่ายอมแพ้เพียงเพราะพัฒนาการช้า ตราบใดที่ยังพยายามต่อไป คุณจะเห็นการเปลี่ยนแปลงของตัวเองแน่นอน</div>
+   <div class="quote"><b>คำศัพท์สำคัญ</b><p>语言 (yǔyán) = ภาษา</p><p>积累 (jīlěi) = สะสม</p><p>坚持 (jiānchí) = พยายามต่อเนื่อง / ยืนหยัด</p><p>放弃 (fàngqì) = ยอมแพ้ / ล้มเลิก</p></div>`
+ }
+];
+
+let currentCategory = "ทั้งหมด";
+
+function setCategory(category, button) {
+  currentCategory = category;
+  document.querySelectorAll("#categories button").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  renderBooks();
+}
+
+function renderBooks() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const filtered = books.filter(book =>
+    (currentCategory==="ทั้งหมด" || book.category===currentCategory) &&
+    (book.title.toLowerCase().includes(q) || book.category.toLowerCase().includes(q))
+  );
+  document.getElementById("books").innerHTML = filtered.length
+    ? filtered.map(book=>`
+      <article class="book">
+        <span class="tag">${book.category} · ${book.level}</span>
+        <h3>${book.title}</h3>
+        <p>กดเพื่อเปิดอ่านเนื้อหา</p>
+        <button class="primary read" onclick="openBook('${book.title.replace(/'/g,"\\'")}')">อ่านหนังสือ →</button>
+      </article>`).join("")
+    : "<p>ยังไม่พบหนังสือที่ค้นหา</p>";
+}
+
+function openBook(title) {
+  const book = books.find(b=>b.title===title);
+  if(!book) return;
+  document.getElementById("content").innerHTML = book.content;
+  document.getElementById("library").classList.add("hidden");
+  document.getElementById("reader").classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+
+function backToLibrary() {
+  document.getElementById("reader").classList.add("hidden");
+  document.getElementById("library").classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+
+renderBooks();
 </script>
 </body>
 </html>

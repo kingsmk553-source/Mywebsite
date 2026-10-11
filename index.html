@@ -2,140 +2,291 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ห้องสมุดของฉัน</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f6f7f2;color:#25352c;font-family:Arial,"Noto Sans Thai",sans-serif;line-height:1.8}
-header{background:#245c45;color:white;padding:26px 18px;text-align:center}
+body{margin:0;background:#f5f6f0;color:#29372e;font-family:Arial,sans-serif;line-height:1.9}
+header{background:#245b43;color:white;text-align:center;padding:28px 15px}
 header h1{margin:0;font-size:28px}
-header p{margin:5px 0 0}
-main{max-width:850px;margin:auto;padding:20px 15px}
-input{width:100%;padding:13px;border:1px solid #ccd5cc;border-radius:12px;font-size:16px;margin-bottom:15px}
+main{max-width:850px;margin:auto;padding:18px}
+input{width:100%;padding:13px;border:1px solid #cbd5cb;border-radius:10px;font-size:16px;margin-bottom:15px}
 nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-button{border:0;border-radius:10px;padding:10px 15px;font-size:15px;cursor:pointer}
-nav button{background:#e3e9e1;color:#245c45}
-nav button.active,.primary{background:#245c45;color:white}
-.book{background:white;border:1px solid #e5e9e1;border-radius:15px;padding:17px;margin:12px 0}
-.book h3{margin:0 0 5px}
-.book p{margin:4px 0;color:#68766c}
-.tag{font-size:12px;color:#47795b}
-.read{margin-top:10px}
-#reader{background:white;border-radius:15px;padding:20px}
-#reader h2{line-height:1.5}
-.chinese{font-size:20px;color:#245c45}
-.translation{background:#f0f5ed;border-radius:10px;padding:12px;margin:12px 0}
-.quote{border-left:4px solid #d3a65b;padding:10px 14px;background:#fff8e8;margin-top:20px}
+button{padding:10px 14px;border:0;border-radius:9px;background:#e2e9e1;color:#245b43;font-size:15px;cursor:pointer}
+nav button.active,.primary{background:#245b43;color:white}
+.book{background:white;border:1px solid #e1e7df;border-radius:14px;padding:16px;margin:12px 0}
+.book h3{margin:3px 0}
+.tag{font-size:12px;color:#64816c}
+#reader{background:white;border-radius:14px;padding:18px}
 .hidden{display:none}
-footer{text-align:center;padding:25px;color:#758075;font-size:13px}
+.chinese{font-size:20px;color:#245b43}
+.translation{background:#f0f5ed;border-radius:10px;padding:12px;margin:10px 0}
+.quote{background:#fff7e7;border-left:4px solid #d5a54f;padding:12px;margin-top:20px}
+.word{border-bottom:1px solid #e5e8e1;padding:5px 0}
+footer{text-align:center;padding:20px;color:#718073}
 </style>
 </head>
 <body>
 <header>
-  <h1>📚 ห้องสมุดของฉัน</h1>
-  <p>อ่านทุกวัน เรียนรู้ทุกวัน</p>
-  <p>นิทานจีน · นิทานไทย · ฝึกภาษาจีน HSK</p>
+<h1>📚 ห้องสมุดของฉัน</h1>
+<p>อ่านทุกวัน เรียนรู้ทุกวัน</p>
+<p>นิทานจีน · นิทานไทย · บทอ่าน HSK</p>
 </header>
-
 <main>
-  <section id="library">
-    <input id="search" type="search" placeholder="ค้นหาชื่อหนังสือ..." oninput="renderBooks()">
-    <nav id="categories">
-      <button class="active" onclick="setCategory('ทั้งหมด',this)">ทั้งหมด</button>
-      <button onclick="setCategory('นิทานจีน',this)">นิทานจีน</button>
-      <button onclick="setCategory('นิทานไทย',this)">นิทานไทย</button>
-      <button onclick="setCategory('HSK',this)">บทอ่าน HSK</button>
-    </nav>
-    <h2>📖 ชั้นหนังสือ</h2>
-    <div id="books"></div>
-  </section>
-
-  <section id="reader" class="hidden">
-    <button class="primary" onclick="backToLibrary()">← กลับไปหน้ารายการ</button>
-    <div id="content"></div>
-  </section>
+<section id="library">
+<input id="search" placeholder="ค้นหาชื่อหนังสือ..." oninput="renderBooks()">
+<nav id="categories">
+<button class="active" onclick="setCategory('ทั้งหมด',this)">ทั้งหมด</button>
+<button onclick="setCategory('นิทานจีน',this)">นิทานจีน</button>
+<button onclick="setCategory('นิทานไทย',this)">นิทานไทย</button>
+<button onclick="setCategory('HSK',this)">บทอ่าน HSK</button>
+</nav>
+<h2>📖 ชั้นหนังสือ <span id="count"></span></h2>
+<div id="books"></div>
+</section>
+<section id="reader" class="hidden">
+<button class="primary" onclick="backToLibrary()">← กลับไปชั้นหนังสือ</button>
+<div id="content"></div>
+</section>
 </main>
-
 <footer>ห้องสมุดออนไลน์ · อ่านฟรี</footer>
-
 <script>
 const books = [
- {
-  title:"ชายหนุ่มกับต้นไม้", category:"นิทานจีน", level:"นิทานสั้น",
-  content:`
-   <h2>ชายหนุ่มกับต้นไม้</h2>
-   <p class="chinese">从前，有一个年轻人。他每天都去看一棵小树，希望它快点长大。</p>
-   <div class="translation"><b>คำแปลไทย</b><br>กาลครั้งหนึ่ง มีชายหนุ่มคนหนึ่ง เขาไปดูต้นไม้เล็ก ๆ ทุกวัน และหวังว่ามันจะเติบโตเร็ว ๆ</div>
-   <p class="chinese">可是，树长得很慢。他有一点儿着急，但是还是每天给树浇水。</p>
-   <div class="translation"><b>คำแปลไทย</b><br>แต่ต้นไม้เติบโตช้ามาก เขารู้สึกกังวลเล็กน้อย แต่ก็ยังรดน้ำให้ต้นไม้ทุกวัน</div>
-   <p class="chinese">几个月以后，小树终于长高了。年轻人明白了：做事情不能太着急，要有耐心。</p>
-   <div class="translation"><b>คำแปลไทย</b><br>หลายเดือนต่อมา ในที่สุดต้นไม้ก็สูงขึ้น ชายหนุ่มเข้าใจว่า การทำสิ่งต่าง ๆ ต้องไม่ใจร้อน แต่ต้องมีความอดทน</div>
-   <div class="quote"><b>คำคมท้ายบท</b><p>做事情不能太着急，要有耐心。</p><p>ความหมาย: การทำสิ่งต่าง ๆ ต้องไม่ใจร้อน ควรมีความอดทน เพราะสิ่งดี ๆ ต้องใช้เวลา</p></div>`
- },
- {
-  title:"กระต่ายกับเต่า", category:"นิทานไทย", level:"นิทานสอนใจ",
-  content:`
-   <h2>กระต่ายกับเต่า</h2>
-   <p>วันหนึ่ง กระต่ายตัวหนึ่งหัวเราะเยาะเต่าว่าเดินช้ามาก เต่าจึงชวนกระต่ายแข่งวิ่ง</p>
-   <p>เมื่อเริ่มการแข่งขัน กระต่ายวิ่งนำไปไกลและคิดว่าตัวเองชนะอย่างแน่นอน จึงนอนพักใต้ต้นไม้</p>
-   <p>ส่วนเต่ายังคงเดินต่อไปอย่างไม่หยุด ในที่สุดเต่าก็ถึงเส้นชัยก่อนกระต่าย</p>
-   <div class="quote"><b>ข้อคิดท้ายบท</b><p>ความพยายามและความสม่ำเสมอ ช่วยให้เราไปถึงเป้าหมายได้</p><p>ตีความ: ไม่ควรประมาทผู้อื่น และควรตั้งใจทำสิ่งที่เริ่มต้นให้สำเร็จ</p></div>`
- },
- {
-  title:"每天进步一点儿", category:"HSK", level:"เหมาะสำหรับผู้เรียน HSK 3–4",
-  content:`
-   <h2>每天进步一点儿</h2>
-   <p class="chinese">学习语言需要时间。每天学习十个新词，慢慢地就会积累很多词语。</p>
-   <p><b>พินอิน:</b><br>Xuéxí yǔyán xūyào shíjiān. Měitiān xuéxí shí ge xīn cí, mànmàn de jiù huì jīlěi hěn duō cíyǔ.</p>
-   <div class="translation"><b>คำแปลไทย</b><br>การเรียนภาษาต้องใช้เวลา ทุกวันเรียนคำศัพท์ใหม่สิบคำ แล้วค่อย ๆ สะสมไป ก็จะมีคำศัพท์มากมาย</div>
-   <p class="chinese">不要因为进步很慢就放弃。只要坚持下去，你一定会看到自己的变化。</p>
-   <p><b>พินอิน:</b><br>Bú yào yīnwèi jìnbù hěn màn jiù fàngqì. Zhǐyào jiānchí xiàqu, nǐ yídìng huì kàndào zìjǐ de biànhuà.</p>
-   <div class="translation"><b>คำแปลไทย</b><br>อย่ายอมแพ้เพียงเพราะพัฒนาการช้า ตราบใดที่ยังพยายามต่อไป คุณจะเห็นการเปลี่ยนแปลงของตัวเองแน่นอน</div>
-   <div class="quote"><b>คำศัพท์สำคัญ</b><p>语言 (yǔyán) = ภาษา</p><p>积累 (jīlěi) = สะสม</p><p>坚持 (jiānchí) = พยายามต่อเนื่อง / ยืนหยัด</p><p>放弃 (fàngqì) = ยอมแพ้ / ล้มเลิก</p></div>`
- }
+{
+title:"画蛇添足",category:"นิทานจีน",level:"成语故事",
+content:`
+<h2>画蛇添足 — วาดงูเติมขา</h2>
+<p class="chinese">从前，几个人比赛画蛇。谁先画好，谁就可以喝一杯酒。</p>
+<p><b>พินอิน:</b> Cóngqián, jǐ ge rén bǐsài huà shé. Shéi xiān huà hǎo, shéi jiù kěyǐ hē yì bēi jiǔ.</p>
+<div class="translation"><b>แปลไทย:</b> กาลครั้งหนึ่ง มีคนกลุ่มหนึ่งแข่งกันวาดงู ใครวาดเสร็จก่อนก็จะได้ดื่มเหล้าหนึ่งถ้วย</div>
+<p class="chinese">一个人很快就画好了蛇，可是他觉得时间还很多，就给蛇加上了四条腿。</p>
+<p><b>พินอิน:</b> Yí ge rén hěn kuài jiù huà hǎo le shé, kěshì tā juéde shíjiān hái hěn duō, jiù gěi shé jiā shàng le sì tiáo tuǐ.</p>
+<div class="translation"><b>แปลไทย:</b> คนหนึ่งวาดงูเสร็จอย่างรวดเร็ว แต่คิดว่ายังมีเวลาเหลือ จึงเติมขาสี่ข้างให้งู</div>
+<p class="chinese">另一个人已经画完了真正的蛇，拿走了酒。第一个人因为多画了几笔，反而输了。</p>
+<p><b>พินอิน:</b> Lìng yí ge rén yǐjīng huà wán le zhēnzhèng de shé, ná zǒu le jiǔ. Dì yí ge rén yīnwèi duō huà le jǐ bǐ, fǎn'ér shū le.</p>
+<div class="translation"><b>แปลไทย:</b> อีกคนวาดงูเสร็จแล้วและได้เหล้าไป คนแรกกลับแพ้เพราะวาดเพิ่มเติมเกินความจำเป็น</div>
+<div class="quote"><b>คำคม:</b> 画蛇添足。<br><b>ความหมาย:</b> ทำสิ่งที่ดีอยู่แล้วให้เกินความจำเป็น จนกลับกลายเป็นผลเสีย<br><b>ข้อคิด:</b> รู้จักพอดีและอย่าทำเกินความจำเป็น</div>`
+},
+{
+title:"守株待兔",category:"นิทานจีน",level:"成语故事",
+content:`
+<h2>守株待兔 — เฝ้าต้นไม้รอกระต่าย</h2>
+<p class="chinese">从前，有一个农夫在田里工作。一天，一只兔子跑得很快，撞到树上死了。</p>
+<p><b>พินอิน:</b> Cóngqián, yǒu yí ge nóngfū zài tián lǐ gōngzuò. Yì tiān, yì zhī tùzi pǎo de hěn kuài, zhuàng dào shù shàng sǐ le.</p>
+<div class="translation"><b>แปลไทย:</b> กาลครั้งหนึ่ง มีชาวนาคนหนึ่งทำงานในนา วันหนึ่งกระต่ายวิ่งมาอย่างรวดเร็วและชนต้นไม้จนตาย</div>
+<p class="chinese">农夫捡到了兔子，非常高兴。他想，以后每天坐在树旁边，就能得到兔子。</p>
+<p><b>พินอิน:</b> Nóngfū jiǎn dào le tùzi, fēicháng gāoxìng. Tā xiǎng, yǐhòu měitiān zuò zài shù pángbiān, jiù néng dédào tùzi.</p>
+<div class="translation"><b>แปลไทย:</b> ชาวนาเก็บกระต่ายได้และดีใจมาก เขาคิดว่าถ้านั่งข้างต้นไม้ทุกวัน ก็จะได้กระต่ายอีก</div>
+<p class="chinese">从那以后，他不再认真种田了。可是，他再也没有等到兔子，田里的庄稼也没有收获。</p>
+<p><b>พินอิน:</b> Cóng nà yǐhòu, tā bú zài rènzhēn zhòng tián le. Kěshì, tā zài yě méiyǒu děng dào tùzi, tián lǐ de zhuāngjia yě méiyǒu shōuhuò.</p>
+<div class="translation"><b>แปลไทย:</b> หลังจากนั้นเขาไม่ตั้งใจทำนาอีก แต่ก็ไม่เคยได้กระต่ายอีกเลย และพืชผลในนาก็เสียหาย</div>
+<div class="quote"><b>คำคม:</b> 守株待兔。<br><b>ความหมาย:</b> รอให้โชคดีเกิดขึ้น โดยไม่ลงมือทำอะไร<br><b>ข้อคิด:</b> ความสำเร็จต้องอาศัยความพยายาม ไม่ใช่รอโชคเพียงอย่างเดียว</div>`
+},
+{
+title:"井底之蛙",category:"นิทานจีน",level:"成语故事",
+content:`
+<h2>井底之蛙 — กบในก้นบ่อ</h2>
+<p class="chinese">一只青蛙住在井里。它每天抬头看天，觉得天空只有井口那么大。</p>
+<p><b>พินอิน:</b> Yì zhī qīngwā zhù zài jǐng lǐ. Tā měitiān táitóu kàn tiān, juéde tiānkōng zhǐ yǒu jǐngkǒu nàme dà.</p>
+<div class="translation"><b>แปลไทย:</b> กบตัวหนึ่งอาศัยอยู่ในบ่อ มันเงยหน้ามองฟ้าทุกวัน และคิดว่าท้องฟ้ามีขนาดเท่าปากบ่อเท่านั้น</div>
+<p class="chinese">一天，一只海龟来到井边，告诉它外面的世界非常大，有大海、高山和许多动物。</p>
+<p><b>พินอิน:</b> Yì tiān, yì zhī hǎiguī lái dào jǐng biān, gàosu tā wàimiàn de shìjiè fēicháng dà, yǒu dàhǎi, gāoshān hé xǔduō dòngwù.</p>
+<div class="translation"><b>แปลไทย:</b> วันหนึ่ง เต่าทะเลมาที่ขอบบ่อและบอกว่าข้างนอกมีโลกกว้างใหญ่ มีทะเล ภูเขาสูง และสัตว์มากมาย</div>
+<p class="chinese">青蛙听了以后很惊讶。它终于明白，自己知道的世界其实很小。</p>
+<p><b>พินอิน:</b> Qīngwā tīng le yǐhòu hěn jīngyà. Tā zhōngyú míngbai, zìjǐ zhīdào de shìjiè qíshí hěn xiǎo.</p>
+<div class="translation"><b>แปลไทย:</b> กบประหลาดใจมาก เมื่อได้ฟังก็เข้าใจในที่สุดว่าโลกที่ตัวเองรู้จักนั้นเล็กมาก</div>
+<div class="quote"><b>คำคม:</b> 井底之蛙。<br><b>ความหมาย:</b> คนที่มีความรู้หรือประสบการณ์จำกัด แต่คิดว่าตนรู้ทุกอย่าง<br><b>ข้อคิด:</b> เปิดใจเรียนรู้โลกภายนอกเสมอ</div>`
+},
+{
+title:"狐假虎威",category:"นิทานจีน",level:"成语故事",
+content:`
+<h2>狐假虎威 — จิ้งจอกยืมบารมีเสือ</h2>
+<p class="chinese">一只老虎抓住了一只狐狸，准备吃掉它。</p>
+<p><b>พินอิน:</b> Yì zhī lǎohǔ zhuā zhù le yì zhī húli, zhǔnbèi chī diào tā.</p>
+<div class="translation"><b>แปลไทย:</b> เสือตัวหนึ่งจับสุนัขจิ้งจอกได้และเตรียมจะกินมัน</div>
+<p class="chinese">狐狸说：“你不能吃我！我是森林里的大王。你跟着我走，就会知道。”</p>
+<p><b>พินอิน:</b> Húli shuō: “Nǐ bù néng chī wǒ! Wǒ shì sēnlín lǐ de dàwáng. Nǐ gēnzhe wǒ zǒu, jiù huì zhīdào.”</p>
+<div class="translation"><b>แปลไทย:</b> จิ้งจอกพูดว่า “เจ้ากินข้าไม่ได้! ข้าคือราชาแห่งป่า เดินตามข้ามาแล้วเจ้าจะรู้เอง”</div>
+<p class="chinese">老虎跟在狐狸后面走。其他动物看见老虎，都害怕地跑开了。狐狸就说，大家是在害怕它。</p>
+<p><b>พินอิน:</b> Lǎohǔ gēn zài húli hòumiàn zǒu. Qítā dòngwù kànjiàn lǎohǔ, dōu hàipà de pǎo kāi le. Húli jiù shuō, dàjiā shì zài hàipà tā.</p>
+<div class="translation"><b>แปลไทย:</b> เสือเดินตามหลังจิ้งจอก เมื่อสัตว์อื่นเห็นเสือก็พากันวิ่งหนี จิ้งจอกจึงอ้างว่าทุกตัวกลัวมัน</div>
+<div class="quote"><b>คำคม:</b> 狐假虎威。<br><b>ความหมาย:</b> ใช้อำนาจของผู้อื่นมาข่มคนอื่น<br><b>ข้อคิด:</b> อย่าตัดสินใครจากภาพที่เห็นเพียงอย่างเดียว</div>`
+},
+{
+title:"愚公移山",category:"นิทานจีน",level:"成语故事",
+content:`
+<h2>愚公移山 — ชายชราย้ายภูเขา</h2>
+<p class="chinese">从前，有一位老人叫愚公。他家门前有两座大山，每次出门都很不方便。</p>
+<p><b>พินอิน:</b> Cóngqián, yǒu yí wèi lǎorén jiào Yú Gōng. Tā jiā ménqián yǒu liǎng zuò dà shān, měi cì chūmén dōu hěn bù fāngbiàn.</p>
+<div class="translation"><b>แปลไทย:</b> กาลครั้งหนึ่ง มีชายชราชื่ออวี๋กง หน้าบ้านมีภูเขาใหญ่สองลูก ทำให้เดินทางออกจากบ้านไม่สะดวก</div>
+<p class="chinese">他决定和家人一起挖山。有人笑他，说这么大的山根本不可能挖完。</p>
+<p><b>พินอิน:</b> Tā juédìng hé jiārén yìqǐ wā shān. Yǒu rén xiào tā, shuō zhème dà de shān gēnběn bù kěnéng wā wán.</p>
+<div class="translation"><b>แปลไทย:</b> เขาตัดสินใจขุดภูเขากับครอบครัว มีคนหัวเราะเยาะและบอกว่าภูเขาใหญ่ขนาดนี้ไม่มีทางขุดเสร็จ</div>
+<p class="chinese">愚公没有放弃。他相信，只要一代一代努力，总有一天可以成功。</p>
+<p><b>พินอิน:</b> Yú Gōng méiyǒu fàngqì. Tā xiāngxìn, zhǐyào yí dài yí dài nǔlì, zǒng yǒu yì tiān kěyǐ chénggōng.</p>
+<div class="translation"><b>แปลไทย:</b> อวี๋กงไม่ยอมแพ้ เขาเชื่อว่าหากพยายามต่อไปจากรุ่นสู่รุ่น สักวันหนึ่งก็จะสำเร็จ</div>
+<div class="quote"><b>คำคม:</b> 愚公移山。<br><b>ความหมาย:</b> ความมุ่งมั่นพยายามเอาชนะอุปสรรคใหญ่ได้<br><b>ข้อคิด:</b> อย่าท้อเพียงเพราะเป้าหมายดูยากเกินไป</div>`
+},
+{
+title:"กระต่ายกับเต่า",category:"นิทานไทย",level:"นิทานสอนใจ",
+content:`
+<h2>กระต่ายกับเต่า</h2>
+<p>กระต่ายตัวหนึ่งชอบหัวเราะเยาะเต่าว่าเดินช้า วันหนึ่งเต่าจึงชวนกระต่ายแข่งวิ่ง</p>
+<p>เมื่อการแข่งขันเริ่มขึ้น กระต่ายวิ่งนำไปไกลมาก มันคิดว่าเต่าคงตามไม่ทัน จึงนอนพักใต้ต้นไม้</p>
+<p>เต่าเดินต่อไปอย่างช้า ๆ แต่ไม่หยุดพัก ในที่สุดเต่าก็มาถึงเส้นชัยก่อน กระต่ายตื่นขึ้นมาแล้วพบว่าตัวเองแพ้</p>
+<div class="quote"><b>ข้อคิด:</b> ความพยายามและความสม่ำเสมอสำคัญมาก อย่าประมาทผู้อื่น</div>`
+},
+{
+title:"ราชสีห์กับหนู",category:"นิทานไทย",level:"นิทานสอนใจ",
+content:`
+<h2>ราชสีห์กับหนู</h2>
+<p>วันหนึ่ง หนูตัวเล็กวิ่งเล่นจนไปรบกวนราชสีห์ที่กำลังนอนหลับ ราชสีห์จับหนูไว้ แต่หนูขอร้องให้ปล่อยมันไป</p>
+<p>หนูสัญญาว่าสักวันหนึ่งจะตอบแทนบุญคุณ ราชสีห์หัวเราะ เพราะคิดว่าหนูตัวเล็กจะช่วยอะไรตนได้</p>
+<p>ต่อมา ราชสีห์ติดตาข่ายของนายพราน หนูได้ยินเสียงร้องจึงรีบมากัดเชือกจนขาด ราชสีห์จึงเป็นอิสระ</p>
+<div class="quote"><b>ข้อคิด:</b> อย่าดูถูกคนอื่นเพียงเพราะเขาตัวเล็กหรือดูไม่มีอำนาจ ทุกคนสามารถช่วยเหลือกันได้</div>`
+},
+{
+title:"เด็กเลี้ยงแกะ",category:"นิทานไทย",level:"นิทานสอนใจ",
+content:`
+<h2>เด็กเลี้ยงแกะ</h2>
+<p>เด็กเลี้ยงแกะคนหนึ่งรู้สึกเบื่อ จึงตะโกนว่าหมาป่ามาแล้ว ชาวบ้านรีบวิ่งมาช่วย แต่กลับพบว่าไม่มีหมาป่า</p>
+<p>เด็กทำเช่นนี้อีกหลายครั้ง จนชาวบ้านไม่เชื่อคำพูดของเขาอีก</p>
+<p>วันหนึ่ง หมาป่ามาจริง ๆ เด็กตะโกนขอความช่วยเหลือ แต่ไม่มีใครมา เพราะทุกคนคิดว่าเขากำลังโกหกอีกครั้ง</p>
+<div class="quote"><b>ข้อคิด:</b> คนที่พูดโกหกบ่อย ๆ จะสูญเสียความน่าเชื่อถือ แม้ในวันที่พูดความจริง คนอื่นก็อาจไม่เชื่อ</div>`
+},
+{
+title:"มดกับตั๊กแตน",category:"นิทานไทย",level:"นิทานสอนใจ",
+content:`
+<h2>มดกับตั๊กแตน</h2>
+<p>ในฤดูร้อน มดขยันหาอาหารและเก็บสะสมไว้สำหรับฤดูหนาว ส่วนตั๊กแตนเอาแต่ร้องเพลงและเล่นสนุก</p>
+<p>ตั๊กแตนเห็นมดทำงานหนักจึงหัวเราะเยาะและชวนให้มาพักผ่อนด้วยกัน</p>
+<p>เมื่อฤดูหนาวมาถึง อากาศหนาวและหาอาหารยาก ตั๊กแตนไม่มีอาหารกิน ส่วนมดมีอาหารที่เก็บไว้</p>
+<div class="quote"><b>ข้อคิด:</b> ควรวางแผนล่วงหน้าและเตรียมพร้อมสำหรับอนาคต ไม่ใช้ชีวิตโดยคิดถึงแต่ความสนุกในวันนี้</div>`
+},
+{
+title:"ชาวนากับงูเห่า",category:"นิทานไทย",level:"นิทานสอนใจ",
+content:`
+<h2>ชาวนากับงูเห่า</h2>
+<p>วันหนึ่ง ชาวนาพบงูตัวหนึ่งนอนนิ่งอยู่ข้างทางในวันที่อากาศหนาว เขาสงสารจึงนำงูไปไว้ใกล้ตัวเพื่อให้ความอบอุ่น</p>
+<p>เมื่องูเริ่มมีแรง มันกลับฉกชาวนา ชาวนาจึงเข้าใจว่าการช่วยเหลือโดยไม่ระวังอาจนำอันตรายมาสู่ตัวเอง</p>
+<div class="quote"><b>ข้อคิด:</b> การมีเมตตาเป็นสิ่งดี แต่ควรใช้สติและรู้จักระวังอันตรายด้วย</div>`
+},
+{
+title:"每天进步一点儿",category:"HSK",level:"HSK 3–4",
+content:`
+<h2>每天进步一点儿 — พัฒนาตัวเองทุกวัน</h2>
+<p class="chinese">学习语言需要时间。每天学习十个新词，慢慢地就会积累很多词语。</p>
+<p><b>พินอิน:</b> Xuéxí yǔyán xūyào shíjiān. Měitiān xuéxí shí ge xīn cí, mànmàn de jiù huì jīlěi hěn duō cíyǔ.</p>
+<div class="translation"><b>แปลไทย:</b> การเรียนภาษาต้องใช้เวลา ทุกวันเรียนคำศัพท์ใหม่สิบคำ ค่อย ๆ สะสมไปก็จะมีคำศัพท์มากมาย</div>
+<p class="chinese">不要因为进步很慢就放弃。只要坚持下去，你一定会看到自己的变化。</p>
+<p><b>พินอิน:</b> Bú yào yīnwèi jìnbù hěn màn jiù fàngqì. Zhǐyào jiānchí xiàqu, nǐ yídìng huì kàndào zìjǐ de biànhuà.</p>
+<div class="translation"><b>แปลไทย:</b> อย่ายอมแพ้เพียงเพราะพัฒนาการช้า ตราบใดที่ยังพยายามต่อไป คุณจะเห็นการเปลี่ยนแปลงของตัวเองแน่นอน</div>
+<div class="quote"><b>คำคม:</b> 坚持就是进步。<br>ความหมาย: การทำอย่างต่อเนื่องก็คือความก้าวหน้า</div>
+<div class="word"><b>积累 (jīlěi)</b> = สะสม</div><div class="word"><b>坚持 (jiānchí)</b> = พยายามต่อเนื่อง</div><div class="word"><b>放弃 (fàngqì)</b> = ยอมแพ้</div>`
+},
+{
+title:"我的中国朋友",category:"HSK",level:"HSK 3–4",
+content:`
+<h2>我的中国朋友 — เพื่อนชาวจีนของฉัน</h2>
+<p class="chinese">我有一个中国朋友。他很热情，也很喜欢帮助别人。</p>
+<p><b>พินอิน:</b> Wǒ yǒu yí ge Zhōngguó péngyou. Tā hěn rèqíng, yě hěn xǐhuan bāngzhù biérén.</p>
+<div class="translation"><b>แปลไทย:</b> ฉันมีเพื่อนชาวจีนคนหนึ่ง เขาเป็นคนมีน้ำใจและชอบช่วยเหลือผู้อื่น</div>
+<p class="chinese">刚来中国的时候，我不太习惯这里的生活。他带我去吃饭，还教我说一些常用的中文。</p>
+<p><b>พินอิน:</b> Gāng lái Zhōngguó de shíhou, wǒ bú tài xíguàn zhèlǐ de shēnghuó. Tā dài wǒ qù chīfàn, hái jiāo wǒ shuō yìxiē chángyòng de Zhōngwén.</p>
+<div class="translation"><b>แปลไทย:</b> ตอนเพิ่งมาจีน ฉันยังไม่คุ้นเคยกับชีวิตที่นี่ เขาพาฉันไปกินข้าวและสอนภาษาจีนที่ใช้บ่อยให้ฉันด้วย</div>
+<p class="chinese">因为他的帮助，我慢慢地适应了新生活。我觉得，真诚的友谊非常珍贵。</p>
+<p><b>พินอิน:</b> Yīnwèi tā de bāngzhù, wǒ mànmàn de shìyìng le xīn shēnghuó. Wǒ juéde, zhēnchéng de yǒuyì fēicháng zhēnguì.</p>
+<div class="translation"><b>แปลไทย:</b> เพราะความช่วยเหลือของเขา ฉันจึงค่อย ๆ ปรับตัวเข้ากับชีวิตใหม่ได้ ฉันคิดว่ามิตรภาพที่จริงใจมีค่ามาก</div>
+<div class="quote"><b>คำคม:</b> 真诚的友谊非常珍贵。<br>มิตรภาพที่จริงใจมีค่ามาก</div>
+<div class="word"><b>热情 (rèqíng)</b> = กระตือรือร้น / มีน้ำใจ</div><div class="word"><b>适应 (shìyìng)</b> = ปรับตัว</div><div class="word"><b>珍贵 (zhēnguì)</b> = มีค่า</div>`
+},
+{
+title:"一次难忘的旅行",category:"HSK",level:"HSK 4",
+content:`
+<h2>一次难忘的旅行 — การเดินทางที่น่าจดจำ</h2>
+<p class="chinese">去年暑假，我和朋友一起去旅行。我们去了一个风景优美的小城市。</p>
+<p><b>พินอิน:</b> Qùnián shǔjià, wǒ hé péngyou yìqǐ qù lǚxíng. Wǒmen qù le yí ge fēngjǐng yōuměi de xiǎo chéngshì.</p>
+<div class="translation"><b>แปลไทย:</b> ช่วงปิดเทอมฤดูร้อนปีที่แล้ว ฉันไปเที่ยวกับเพื่อน เราไปเมืองเล็ก ๆ ที่มีทิวทัศน์สวยงาม</div>
+<p class="chinese">我们参观了当地的古建筑，品尝了特别的美食，还认识了很多热情的人。</p>
+<p><b>พินอิน:</b> Wǒmen cānguān le dāngdì de gǔ jiànzhù, pǐncháng le tèbié de měishí, hái rènshi le hěn duō rèqíng de rén.</p>
+<div class="translation"><b>แปลไทย:</b> เราไปชมอาคารเก่าแก่ในท้องถิ่น ลองชิมอาหารพิเศษ และได้รู้จักผู้คนที่มีน้ำใจมากมาย</div>
+<p class="chinese">这次旅行让我放松了心情，也让我了解了不同的文化。我希望以后还有机会再去那里。</p>
+<p><b>พินอิน:</b> Zhè cì lǚxíng ràng wǒ fàngsōng le xīnqíng, yě ràng wǒ liǎojiě le bùtóng de wénhuà. Wǒ xīwàng yǐhòu hái yǒu jīhuì zài qù nàli.</p>
+<div class="translation"><b>แปลไทย:</b> การเดินทางครั้งนี้ช่วยให้ฉันผ่อนคลายและเข้าใจวัฒนธรรมที่แตกต่าง ฉันหวังว่าจะมีโอกาสกลับไปที่นั่นอีก</div>
+<div class="quote"><b>คำคม:</b> 读万卷书，行万里路。<br>อ่านหนังสือให้มาก และออกเดินทางเพื่อเรียนรู้โลกให้กว้าง</div>
+<div class="word"><b>难忘 (nánwàng)</b> = ยากจะลืม</div><div class="word"><b>参观 (cānguān)</b> = เยี่ยมชม</div><div class="word"><b>文化 (wénhuà)</b> = วัฒนธรรม</div>`
+},
+{
+title:"学习中文的方法",category:"HSK",level:"HSK 4",
+content:`
+<h2>学习中文的方法 — วิธีเรียนภาษาจีน</h2>
+<p class="chinese">我学习中文已经有一段时间了。我发现，只看书是不够的，还需要多听、多说、多练习。</p>
+<p><b>พินอิน:</b> Wǒ xuéxí Zhōngwén yǐjīng yǒu yí duàn shíjiān le. Wǒ fāxiàn, zhǐ kàn shū shì bú gòu de, hái xūyào duō tīng, duō shuō, duō liànxí.</p>
+<div class="translation"><b>แปลไทย:</b> ฉันเรียนภาษาจีนมาระยะหนึ่งแล้ว ฉันพบว่าอ่านหนังสืออย่างเดียวไม่พอ ยังต้องฟัง พูด และฝึกฝนให้มากด้วย</div>
+<p class="chinese">每天我会复习以前学过的词语，再学习一些新词。如果遇到不懂的问题，我就会问老师或朋友。</p>
+<p><b>พินอิน:</b> Měitiān wǒ huì fùxí yǐqián xué guo de cíyǔ, zài xuéxí yìxiē xīn cí. Rúguǒ yùdào bù dǒng de wèntí, wǒ jiù huì wèn lǎoshī huò péngyou.</p>
+<div class="translation"><b>แปลไทย:</b> ทุกวันฉันทบทวนคำศัพท์ที่เคยเรียน แล้วเรียนคำใหม่เพิ่ม หากพบปัญหาที่ไม่เข้าใจ ฉันจะถามครูหรือเพื่อน</div>
+<p class="chinese">我相信，只要每天进步一点儿，中文水平一定会越来越好。</p>
+<p><b>พินอิน:</b> Wǒ xiāngxìn, zhǐyào měitiān jìnbù yìdiǎnr, Zhōngwén shuǐpíng yídìng huì yuèláiyuè hǎo.</p>
+<div class="translation"><b>แปลไทย:</b> ฉันเชื่อว่าถ้าพัฒนาตัวเองวันละนิด ระดับภาษาจีนจะดีขึ้นเรื่อย ๆ อย่างแน่นอน</div>
+<div class="quote"><b>คำคม:</b> 熟能生巧。<br>ฝึกฝนจนชำนาญแล้วจะเกิดความเชี่ยวชาญ</div>
+<div class="word"><b>复习 (fùxí)</b> = ทบทวน</div><div class="word"><b>练习 (liànxí)</b> = ฝึกฝน</div><div class="word"><b>水平 (shuǐpíng)</b> = ระดับความสามารถ</div>`
+},
+{
+title:"我的未来计划",category:"HSK",level:"HSK 4",
+content:`
+<h2>我的未来计划 — แผนในอนาคตของฉัน</h2>
+<p class="chinese">每个人都应该有自己的计划。我希望将来能找到一份自己喜欢的工作。</p>
+<p><b>พินอิน:</b> Měi ge rén dōu yīnggāi yǒu zìjǐ de jìhuà. Wǒ xīwàng jiānglái néng zhǎodào yí fèn zìjǐ xǐhuan de gōngzuò.</p>
+<div class="translation"><b>แปลไทย:</b> ทุกคนควรมีแผนของตัวเอง ฉันหวังว่าในอนาคตจะได้งานที่ตัวเองชอบ</div>
+<p class="chinese">为了实现这个目标，我要继续学习中文，提高自己的能力，也要积累工作经验。</p>
+<p><b>พินอิน:</b> Wèile shíxiàn zhège mùbiāo, wǒ yào jìxù xuéxí Zhōngwén, tígāo zìjǐ de nénglì, yě yào jīlěi gōngzuò jīngyàn.</p>
+<div class="translation"><b>แปลไทย:</b> เพื่อให้บรรลุเป้าหมายนี้ ฉันต้องเรียนภาษาจีนต่อไป พัฒนาความสามารถของตัวเอง และสะสมประสบการณ์การทำงาน</div>
+<p class="chinese">我知道成功不是一天就能实现的，所以我会一步一步努力，不轻易放弃。</p>
+<p><b>พินอิน:</b> Wǒ zhīdào chénggōng bú shì yì tiān jiù néng shíxiàn de, suǒyǐ wǒ huì yí bù yí bù nǔlì, bù qīngyì fàngqì.</p>
+<div class="translation"><b>แปลไทย:</b> ฉันรู้ว่าความสำเร็จไม่ได้เกิดขึ้นได้ในวันเดียว ดังนั้นฉันจะพยายามทีละขั้นและไม่ยอมแพ้ง่าย ๆ</div>
+<div class="quote"><b>คำคม:</b> 有志者，事竟成。<br>ผู้ที่มีความมุ่งมั่น ย่อมทำสิ่งต่าง ๆ ให้สำเร็จได้</div>
+<div class="word"><b>将来 (jiānglái)</b> = อนาคต</div><div class="word"><b>实现 (shíxiàn)</b> = ทำให้สำเร็จ</div><div class="word"><b>经验 (jīngyàn)</b> = ประสบการณ์</div>`
+}
 ];
 
-let currentCategory = "ทั้งหมด";
+let currentCategory="ทั้งหมด";
 
-function setCategory(category, button) {
-  currentCategory = category;
-  document.querySelectorAll("#categories button").forEach(b=>b.classList.remove("active"));
-  button.classList.add("active");
-  renderBooks();
+function setCategory(category,button){
+ currentCategory=category;
+ document.querySelectorAll("#categories button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ renderBooks();
 }
 
-function renderBooks() {
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  const filtered = books.filter(book =>
-    (currentCategory==="ทั้งหมด" || book.category===currentCategory) &&
-    (book.title.toLowerCase().includes(q) || book.category.toLowerCase().includes(q))
-  );
-  document.getElementById("books").innerHTML = filtered.length
-    ? filtered.map(book=>`
-      <article class="book">
-        <span class="tag">${book.category} · ${book.level}</span>
-        <h3>${book.title}</h3>
-        <p>กดเพื่อเปิดอ่านเนื้อหา</p>
-        <button class="primary read" onclick="openBook('${book.title.replace(/'/g,"\\'")}')">อ่านหนังสือ →</button>
-      </article>`).join("")
-    : "<p>ยังไม่พบหนังสือที่ค้นหา</p>";
+function renderBooks(){
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ const filtered=books.map((b,i)=>({...b,id:i})).filter(b=>
+  (currentCategory==="ทั้งหมด"||b.category===currentCategory)&&
+  (b.title.toLowerCase().includes(q)||b.category.toLowerCase().includes(q)||b.level.toLowerCase().includes(q))
+ );
+ document.getElementById("count").textContent="("+filtered.length+" เรื่อง)";
+ document.getElementById("books").innerHTML=filtered.length?
+ filtered.map(b=>`
+ <article class="book">
+ <span class="tag">${b.category} · ${b.level}</span>
+ <h3>${b.title}</h3>
+ <button class="primary" onclick="openBook(${b.id})">อ่านหนังสือ →</button>
+ </article>`).join(""):"<p>ไม่พบหนังสือที่ค้นหา</p>";
 }
 
-function openBook(title) {
-  const book = books.find(b=>b.title===title);
-  if(!book) return;
-  document.getElementById("content").innerHTML = book.content;
-  document.getElementById("library").classList.add("hidden");
-  document.getElementById("reader").classList.remove("hidden");
-  window.scrollTo(0,0);
+function openBook(id){
+ document.getElementById("content").innerHTML=books[id].content;
+ document.getElementById("library").classList.add("hidden");
+ document.getElementById("reader").classList.remove("hidden");
+ window.scrollTo(0,0);
 }
 
-function backToLibrary() {
-  document.getElementById("reader").classList.add("hidden");
-  document.getElementById("library").classList.remove("hidden");
-  window.scrollTo(0,0);
+function backToLibrary(){
+ document.getElementById("reader").classList.add("hidden");
+ document.getElementById("library").classList.remove("hidden");
+ window.scrollTo(0,0);
 }
-
 renderBooks();
 </script>
 </body>
